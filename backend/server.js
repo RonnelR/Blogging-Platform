@@ -2,6 +2,8 @@ import express from 'express';
 import dotenv from 'dotenv';
 import colors from 'colors';
 import authRoutes from './Routes/authRoutes.js'
+import blogRoutes from './Routes/blogRoutes.js'
+import categoryRoutes from './Routes/categoryRoutes.js'
 import { databaseConn } from './Cofig/db.js';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -23,6 +25,8 @@ app.use(morgan('dev'))
 
 // routes
 app.use('/api/auth',authRoutes)
+app.use('/api/blog',blogRoutes )
+app.use('/api/category',categoryRoutes)
 
 // PORT
 const PORT = process.env.PORT;

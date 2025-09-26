@@ -20,10 +20,16 @@ const userSchema = new mongoose.Schema({
         unique:true,
         sparse:true
     },
-        photo: {
+    photo: {
         data: Buffer,
         contentType: String
         },
+    savedBlogs: [
+  {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Blog",
+  },
+],
     role:{
         type:String,
         enum:['user','admin'],
@@ -31,4 +37,4 @@ const userSchema = new mongoose.Schema({
     }
 },{timestamps:true});
 
-export const userModel = mongoose.model('user',userSchema)
+export const userModel = mongoose.model('User',userSchema)

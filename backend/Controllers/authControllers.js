@@ -140,8 +140,76 @@ res.status(200).json({
 
 }
 
-//-------------Update Profile Controller----------------------------
 
+//--------------------forgot password-----------------------------------
+
+import nodemailer from "nodemailer";
+
+// 📌 Send Reset Link
+export const forgotPasswordController = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ success: false, message: "Email is required" });
+
+    const user = await userModel.findOne({ email });
+    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+
+    // Create reset token (expires in 15m)
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "15m" });
+
+    const resetLink = `${process.env.FRONTEND_URL}/reset-password/${token}`;
+
+    // Send mail
+    const transporter = nodemailer.createTransport({
+      service: "gmail", // you can use others
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
+
+    await transporter.sendMail({
+      from: `"Blog App" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: "Password Reset Request",
+      html: `<p>You requested a password reset</p>
+             <p>Click here to reset: <a href="${resetLink}">${resetLink}</a></p>
+             <p>This link is valid for 15 minutes.</p>`,
+    });
+
+    res.json({ success: true, message: "Password reset email sent successfully!" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+//----------------------reset link for password change---------------
+
+export const resetPasswordController = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+
+    if (!password) return res.status(400).json({ success: false, message: "Password is required" });
+
+    // Verify token
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Hash new password
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await userModel.findByIdAndUpdate(decoded.id, { password: hashedPassword });
+
+    res.json({ success: true, message: "Password has been reset successfully!" });
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ success: false, message: "Invalid or expired token" });
+  }
+};
+
+
+//-------------Update Profile Controller----------------------------
 export const updateProfileController = async (req, res) => {
   try {
     const { name, password, phoneNo } = req.fields;
@@ -154,14 +222,25 @@ export const updateProfileController = async (req, res) => {
         return res.status(400).send({ error: "Name is required!" });
 
       case phoneNo && phoneNo.length > 10:
-        return res.status(400).send({ error: "Phone number must be max 10 digits" });
+        return res
+          .status(400)
+          .send({ error: "Phone number must be max 10 digits" });
 
       case photo && photo.size > 1000000:
-        return res.status(400).send({ error: "Photo size should be below 1 MB" });
+        return res
+          .status(400)
+          .send({ error: "Photo size should be below 1 MB" });
     }
 
     // Build update data
-    const updateData = { ...req.fields };
+    const updateData = {};
+
+    if (name) updateData.name = name;
+
+    // only update phoneNo if provided
+    if (phoneNo !== undefined && phoneNo !== "") {
+      updateData.phoneNo = phoneNo;
+    }
 
     // Handle password (only if provided)
     if (password) {
@@ -181,16 +260,17 @@ export const updateProfileController = async (req, res) => {
     // If photo is uploaded
     if (photo) {
       updatedUser.photo.data = fs.readFileSync(photo.path);
-      updatedUser.photo.contentType = photo.type
+      updatedUser.photo.contentType = photo.type;
       await updatedUser.save();
     }
 
     res.status(200).json({
       success: true,
       message: "Profile updated successfully!",
-      updatedUser
+      updatedUser,
     });
   } catch (error) {
+    console.error("❌ Error in updateProfileController:", error);
     res.status(500).json({
       success: false,
       message: "Error in updating profile",
@@ -225,8 +305,8 @@ export const userPhotoController = async (req,res) =>{
 
 export const allUsersController = async (req,res) =>{
 try {
-    // const allUsers = await userModel.find({ role: "user" }).select("-photo");
-    const allUsers = await userModel.find({}).select("-photo");
+  
+    const allUsers = await userModel.find({})
 
     if (!allUsers) {
         res.json({message:"no user to show!"})
@@ -252,7 +332,7 @@ try {
 //-------------delete user Controller----------------------------
 export const deleteUserController = async ( req,res )=>{
      try {
-       const deleteUser = await userModel.findByIdAndDelete(req.params.id)
+       const deleteUser = await userModel.findByIdAndDelete(req.params.userId)
        if(!deleteUser){
           res.status(400).json({
          success:false,
@@ -279,7 +359,7 @@ export const deleteUserController = async ( req,res )=>{
 //-------------update user role Controller----------------------------
 export const updateRoleController = async (req, res) => {
   try {
-    const id = req.params.id;
+    const id = req.params.userId;
     const { role } = req.body;
 
     if (!role) {
@@ -298,7 +378,7 @@ export const updateRoleController = async (req, res) => {
       });
     }
 
-    // 🔎 Update role safely
+    // 🔎 Update role safely  
     user.role = role;
     const updatedUser = await user.save();
 
@@ -315,5 +395,72 @@ export const updateRoleController = async (req, res) => {
       message: "Server Error while updating role",
       error: error.message,
     });
+  }
+};
+
+
+//--------------------------------save blog---------------------------------------
+export const saveBlogController = async (req, res) => {
+  try {
+    const userId = req.user._id || req.user.id // from auth middleware
+    if (!userId) {
+      return res.status(400).json({ success: false, message: "userid is not getting" });
+    }
+
+    const { blogId } = req.params;
+
+    const user = await userModel
+      .findByIdAndUpdate(
+        userId,
+        { $addToSet: { savedBlogs: blogId } },
+        { new: true }
+      )
+      .populate("savedBlogs");
+
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
+
+    res.json({ success: true, savedBlogs: user.savedBlogs });
+  } catch (error) {
+    console.error("Save Blog Error:", error);
+    res.status(500).json({ success: false, message: "Error saving blog", error: error.message });
+  }
+};
+
+
+//-----------------------------------unsave blog----------------------------
+export const unsaveBlogController = async (req, res) => {
+  try {
+    const userId = req.user._id || req.user.id
+    const { blogId } = req.params;
+
+    const user = await userModel.findByIdAndUpdate(
+      userId,
+      { $pull: { savedBlogs: blogId } },
+      { new: true }
+    ).populate("savedBlogs");
+
+    res.json({ success: true, savedBlogs: user.savedBlogs });
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error unsaving blog", error });
+  }
+};
+
+
+
+//-------------------------get saved blogs----------------------------
+export const getSavedBlogsController = async (req, res) => {
+  try {
+    const userId = req.user._id || req.user.id;
+
+    const user = await userModel.findById(userId).populate({
+      path: "savedBlogs",
+      populate: { path: "author", select: "name _id" }
+    });
+
+    res.json({ success: true, savedBlogs: user.savedBlogs , countOfSavedBlogs: user.savedBlogs.length});
+  } catch (error) {
+    res.status(500).json({ success: false, message: "Error fetching saved blogs", error });
   }
 };
