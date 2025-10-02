@@ -20,7 +20,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:3000",         // local dev
-  "https://effervescent-shortbread-431c3b.netlify.app"  // deployed frontend
+  "https://italics-blogging-platform.netlify.app"  // deployed frontend
 ];
 
 //middleware
