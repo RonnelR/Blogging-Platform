@@ -18,10 +18,21 @@ databaseConn();
 // rest object
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:3000",         // local dev
+  "https://effervescent-shortbread-431c3b.netlify.app"  // deployed frontend
+];
+
 //middleware
 app.use(express.json());
 app.use(cors({
-  origin: "https://your-frontend.netlify.app",
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
 }));
 app.use(morgan('dev'))
