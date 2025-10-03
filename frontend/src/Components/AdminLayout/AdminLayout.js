@@ -12,10 +12,12 @@ const AdminLayout = ({ children }) => {
       <AdminHeader onMenuClick={() => setIsMobileOpen(true)} />
 
       {/* Sidebar + Content area */}
-      <div className="flex flex-1">
+      <div className="flex flex-1 overflow-hidden md:ml-64">
         <AdminSidebar isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
 
-        <main className="flex-1 p-4">{children}</main>
+        <main className="flex-1 p-4 overflow-auto">
+          <div className="max-w-7xl mx-auto">{children}</div>
+        </main>
       </div>
 
       {/* Footer always at bottom */}

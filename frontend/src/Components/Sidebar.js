@@ -1,12 +1,13 @@
 import React from "react";
-import { FilePlus, BookOpen, Bookmark, X, House } from "lucide-react";
+import { House, FilePlus, BookOpen, Bookmark, X } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
   const navItems = [
-    { name: "Home", icon:  <House size={22} />, href: "/blogs" },
+    { name: "Home", icon: <House size={22} />, href: "/blogs" },
     { name: "New Blog", icon: <FilePlus size={22} />, href: "/new-blog" },
     { name: "Your Blogs", icon: <BookOpen size={22} />, href: "/your-blogs" },
-    { name: "Saved Blogs", icon:  <Bookmark size={22}/> , href: "/saved-blogs" },
+    { name: "Saved Blogs", icon: <Bookmark size={22} />, href: "/saved-blogs" },
   ];
 
   return (
@@ -21,11 +22,12 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
 
       {/* Sidebar */}
       <aside
-        className={`bg-white dark:bg-gray-900 shadow-lg
-          w-64 z-30 transition-transform duration-300
-          md:relative
-          ${isMobileOpen ? "fixed top-0 left-0 h-full" : "-translate-x-full md:translate-x-0"}
-        `}
+         className={`bg-white dark:bg-gray-900 shadow-lg
+    w-64 z-50 transition-transform duration-300
+    md:relative md:translate-x-0
+    fixed top-0 left-0 h-full
+    ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
+  `}
       >
         {/* Mobile close button */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800 md:hidden">
@@ -43,14 +45,15 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
         {/* Navigation */}
         <nav className="mt-4 space-y-2 px-2">
           {navItems.map((item, index) => (
-            <a
+            <Link
               key={index}
-              href={item.href}
+              to={item.href}
+              onClick={() => setIsMobileOpen(false)}
               className="flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-200 hover:bg-gray-200 dark:hover:bg-gray-800 rounded-lg transition"
             >
               {item.icon}
               <span>{item.name}</span>
-            </a>
+            </Link>
           ))}
         </nav>
       </aside>

@@ -16,58 +16,50 @@ import { setBlogId } from "../../Redux/blogSlice";
 
 const AdminPage = () => {
   const token = useSelector((state) => state.user.token);
-
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [users, setUsers] = useState([]);
   const [blogs, setBlogs] = useState([]);
-  const [deleteType, setDeleteType] = useState(null); // "user" or "blog"
+  const [deleteType, setDeleteType] = useState(null);
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [selectedBlogId, setSelectedBlogId] = useState(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
 
-  // Navigate to single blog
   const handleSingleBlog = (id) => {
     localStorage.setItem("blogId", id);
     dispatch(setBlogId(id));
     navigate("/single-blog");
   };
 
-  // Fetch all users
+  // fetch users
   const allUsers = async () => {
     try {
       const { data } = await All_Users(token);
-      if (data?.allUsers) {
-        setUsers(data.allUsers);
-      }
+      if (data?.allUsers) setUsers(data.allUsers);
     } catch (error) {
       toast.error(`Error fetching users: ${error.message}`);
     }
   };
 
-  // Fetch all blogs
+  // fetch blogs
   const fetchAllBlogs = async () => {
     try {
       const { data } = await All_Blogs(token);
-      if (data?.allBlogs) {
-        setBlogs(data.allBlogs);
-      }
+      if (data?.allBlogs) setBlogs(data.allBlogs);
     } catch (err) {
       toast.error(`Error fetching blogs: ${err.message}`);
     }
   };
 
-  // ✅ FIXED useEffect
   useEffect(() => {
     if (token) {
       allUsers();
       fetchAllBlogs();
     }
-    //eslint-disable-next-line
+    // eslint-disable-next-line
   }, [token]);
 
-  // Toggle role (admin <-> user)
   const toggleRole = async (id, role) => {
     try {
       const changeRole = role === "admin" ? "user" : "admin";
@@ -75,9 +67,7 @@ const AdminPage = () => {
 
       if (data?.success) {
         setUsers((prev) =>
-          prev.map((u) =>
-            u._id === id ? { ...u, role: changeRole } : u
-          )
+          prev.map((u) => (u._id === id ? { ...u, role: changeRole } : u))
         );
         toast.success(`Changed role to ${changeRole}`);
       }
@@ -86,7 +76,6 @@ const AdminPage = () => {
     }
   };
 
-  // Open delete modal
   const openDeleteModal = (id, e, type) => {
     e.stopPropagation();
     if (type === "blog") {
@@ -99,7 +88,6 @@ const AdminPage = () => {
     setDeleteModalOpen(true);
   };
 
-  // Confirm delete
   const confirmDelete = async () => {
     try {
       if (deleteType === "blog" && selectedBlogId) {
@@ -128,34 +116,36 @@ const AdminPage = () => {
 
   return (
     <AdminLayout>
-      <div className="max-w-6xl mx-auto p-6 space-y-8">
+      <div className="max-w-7xl mx-auto p-4 sm:p-6 space-y-8">
         {/* Stats */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
           <div
             onClick={() => navigate("/all-users")}
-            className="p-6 bg-white dark:bg-gray-800 shadow rounded-2xl flex items-center justify-between cursor-pointer"
+            className="p-4 sm:p-6 bg-white dark:bg-gray-800 shadow rounded-2xl flex items-center justify-between cursor-pointer"
           >
             <div>
-              <p className="text-gray-500">Total Users</p>
-              <h2 className="text-2xl font-bold">{users.length}</h2>
+              <p className="text-gray-500 text-sm sm:text-base">Total Users</p>
+              <h2 className="text-xl sm:text-2xl font-bold">{users.length}</h2>
             </div>
-            <Users className="text-blue-500" size={40} />
+            <Users className="text-blue-500" size={32} />
           </div>
           <div
             onClick={() => navigate("/all-blogs")}
-            className="p-6 bg-white dark:bg-gray-800 shadow rounded-2xl flex items-center justify-between cursor-pointer"
+            className="p-4 sm:p-6 bg-white dark:bg-gray-800 shadow rounded-2xl flex items-center justify-between cursor-pointer"
           >
             <div>
-              <p className="text-gray-500">Total Blogs</p>
-              <h2 className="text-2xl font-bold">{blogs.length}</h2>
+              <p className="text-gray-500 text-sm sm:text-base">Total Blogs</p>
+              <h2 className="text-xl sm:text-2xl font-bold">{blogs.length}</h2>
             </div>
-            <FileText className="text-green-500" size={40} />
+            <FileText className="text-green-500" size={32} />
           </div>
         </div>
 
         {/* Recent Users */}
         <div>
-          <h2 className="text-xl font-semibold mb-4">Recent Users</h2>
+          <h2 className="text-lg sm:text-xl font-semibold mb-4">
+            Recent Users
+          </h2>
           {users.length === 0 ? (
             <p className="text-gray-500">No Users</p>
           ) : (
@@ -163,9 +153,10 @@ const AdminPage = () => {
               {users.map((user) => (
                 <div
                   key={user._id}
-                  className="p-4 bg-white dark:bg-gray-800 shadow rounded-xl flex items-center justify-between"
+                  className="p-4 bg-white dark:bg-gray-800 shadow rounded-xl flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
                 >
-                  <div className="flex items-center gap-4">
+                  {/* User Info */}
+                  <div className="flex items-center gap-3 sm:gap-4">
                     {user?.photo ? (
                       <img
                         src={`${process.env.REACT_APP_API_URL}/api/auth/user-photo/${user._id}?t=${Date.now()}`}
@@ -177,25 +168,31 @@ const AdminPage = () => {
                         {user?.name?.charAt(0).toUpperCase() || "U"}
                       </div>
                     )}
-
-                    <div>
-                      <h3 className="font-semibold">{user.name}</h3>
-                      <p className="text-sm  text-gray-500">
-                        Role:<span className="font-bold"> {user.role.toUpperCase()}</span>
+                    <div className="overflow-hidden">
+                      <h3 className="font-semibold truncate">{user.name}</h3>
+                      <p className="text-sm text-gray-500">
+                        Role:{" "}
+                        <span className="font-bold">
+                          {user.role.toUpperCase()}
+                        </span>
                       </p>
-                      <p className="text-sm text-gray-400">{user.email}</p>
+                      <p className="text-sm text-gray-400 truncate">
+                        {user.email}
+                      </p>
                     </div>
                   </div>
-                  <div className="flex gap-2">
+
+                  {/* Actions */}
+                  <div className="flex flex-wrap gap-2">
                     <button
                       onClick={() => toggleRole(user._id, user.role)}
-                      className="px-3 py-1 text-sm bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 flex items-center gap-1"
+                      className="flex-1 sm:flex-none px-3 py-1 text-sm bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 flex items-center justify-center gap-1"
                     >
                       <Edit size={16} /> Toggle Role
                     </button>
                     <button
                       onClick={(e) => openDeleteModal(user._id, e, "user")}
-                      className="px-3 py-1 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center gap-1"
+                      className="flex-1 sm:flex-none px-3 py-1 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700 flex items-center justify-center gap-1"
                     >
                       <Trash2 size={16} /> Delete
                     </button>
@@ -208,7 +205,9 @@ const AdminPage = () => {
 
         {/* Recent Blogs */}
         <div>
-          <h2 className="text-xl font-semibold mb-4">Recent Blogs</h2>
+          <h2 className="text-lg sm:text-xl font-semibold mb-4">
+            Recent Blogs
+          </h2>
           {blogs.length === 0 ? (
             <p className="text-gray-500">No Blogs</p>
           ) : (
@@ -219,8 +218,8 @@ const AdminPage = () => {
                   onClick={() => handleSingleBlog(blog._id)}
                   className="p-4 bg-white dark:bg-gray-800 shadow rounded-xl flex flex-col md:flex-row gap-4 cursor-pointer"
                 >
-                  {/* Left: Author Info */}
-                  <div className="flex-1 flex items-center gap-4">
+                  {/* Author Info */}
+                  <div className="flex-1 flex items-center gap-3 md:gap-4">
                     {blog?.author?.photo ? (
                       <img
                         src={`${process.env.REACT_APP_API_URL}/api/auth/user-photo/${blog.author._id}?t=${Date.now()}`}
@@ -232,17 +231,25 @@ const AdminPage = () => {
                         {blog?.author?.name?.charAt(0).toUpperCase() || "U"}
                       </div>
                     )}
-                    <div>
-                      <h3 className="font-semibold">{blog.title}</h3>
-                      <p className="text-sm text-gray-500">{blog?.author?.name}</p>
-                      <p className="text-sm text-gray-400">{blog.excerpt}</p>
+                    <div className="overflow-hidden">
+                      <h3 className="font-semibold truncate">{blog.title}</h3>
+                      <p className="text-sm text-gray-500 truncate">
+                        {blog?.author?.name}
+                      </p>
+                      <p className="text-sm text-gray-400 line-clamp-2">
+                        {blog.excerpt}
+                      </p>
                     </div>
                   </div>
 
-                  {/* Right: Cover */}
+                  {/* Cover Image */}
                   {blog?.coverImage && (
                     <img
-                      src={blog.coverImage.url ? blog.coverImage.url : blog.coverImage}
+                      src={
+                        blog.coverImage.url
+                          ? blog.coverImage.url
+                          : blog.coverImage
+                      }
                       alt="cover"
                       className="w-full md:w-40 h-28 object-cover rounded-lg"
                     />
@@ -250,7 +257,7 @@ const AdminPage = () => {
 
                   {/* Delete Button */}
                   <div
-                    className="flex md:flex-col justify-end gap-2"
+                    className="flex justify-end md:flex-col gap-2"
                     onClick={(e) => e.stopPropagation()}
                   >
                     <button
@@ -267,7 +274,6 @@ const AdminPage = () => {
         </div>
       </div>
 
-      {/* Delete Confirmation Modal */}
       <DeleteConfirmationModal
         isOpen={deleteModalOpen}
         onClose={() => setDeleteModalOpen(false)}
