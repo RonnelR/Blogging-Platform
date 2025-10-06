@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Menu, PenLine, User, LogOut } from "lucide-react"; // Added icons
+import { Menu, PenLine, User, LogOut } from "lucide-react";
 import ProfileModal from "../../Pages/Profile";
 import BrandNname from "../../Assects/logo_green.png";
 import { useSelector } from "react-redux";
@@ -20,11 +20,10 @@ const AdminHeader = ({ onMenuClick }) => {
 
   return (
     <>
-      <header className="w-full sticky top-0 z-40 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white shadow-md">
-        <div className="max-w-7xl mx-auto flex items-center justify-between p-4">
+      <header className="h-16 w-full sticky top-0 z-50 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white shadow-md">
+        <div className="max-w-7xl mx-auto flex items-center justify-between h-full px-4">
           {/* Left: Mobile menu + Brand */}
           <div className="flex items-center gap-4">
-            {/* Mobile menu button */}
             <button
               className="md:hidden text-white dark:text-gray-800"
               onClick={onMenuClick}
@@ -32,7 +31,6 @@ const AdminHeader = ({ onMenuClick }) => {
               <Menu size={24} />
             </button>
 
-            {/* Brand */}
             <Link to="/admin" className="flex items-center">
               <img
                 src={BrandNname}
@@ -43,9 +41,8 @@ const AdminHeader = ({ onMenuClick }) => {
             </Link>
           </div>
 
-          {/* Right Section (avatar visible on all screens) */}
+          {/* Right Section */}
           <div className="flex items-center gap-6">
-            {/* Write button only for desktop */}
             <Link
               to="/new-blog"
               className="hidden md:flex items-center gap-2 text-white dark:text-gray-800 hover:text-[#4ECCA3] transition"
@@ -54,7 +51,6 @@ const AdminHeader = ({ onMenuClick }) => {
               Write
             </Link>
 
-            {/* Profile Dropdown */}
             <div className="relative">
               <button onClick={() => setDropdownOpen(!dropdownOpen)}>
                 <div className="w-10 h-10 flex items-center justify-center bg-red-100 text-red-500 rounded-full text-2xl font-bold">
@@ -72,7 +68,6 @@ const AdminHeader = ({ onMenuClick }) => {
 
               {dropdownOpen && (
                 <div className="absolute right-0 mt-2 w-44 bg-white dark:bg-gray-900 rounded-lg shadow-lg py-2 animate-fadeIn">
-                  {/* Profile */}
                   <button
                     onClick={() => {
                       setProfileOpen(true);
@@ -83,7 +78,6 @@ const AdminHeader = ({ onMenuClick }) => {
                     <User size={18} /> Profile
                   </button>
 
-                  {/* New Blog (visible on mobile only, desktop has button) */}
                   <Link
                     to="/new-blog"
                     onClick={() => setDropdownOpen(false)}
@@ -92,7 +86,6 @@ const AdminHeader = ({ onMenuClick }) => {
                     <PenLine size={18} /> New Blog
                   </Link>
 
-                  {/* Logout */}
                   <button
                     onClick={handleLogout}
                     className="flex items-center gap-2 w-full text-left px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
@@ -106,7 +99,6 @@ const AdminHeader = ({ onMenuClick }) => {
         </div>
       </header>
 
-      {/* Profile Modal */}
       <ProfileModal
         isOpen={profileOpen}
         onClose={() => setProfileOpen(false)}

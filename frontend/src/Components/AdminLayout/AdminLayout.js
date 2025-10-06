@@ -8,19 +8,24 @@ const AdminLayout = ({ children }) => {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950">
-      {/* Header always on top */}
+      {/* Header */}
       <AdminHeader onMenuClick={() => setIsMobileOpen(true)} />
 
-      {/* Sidebar + Content area */}
-      <div className="flex flex-1 overflow-hidden md:ml-64">
-        <AdminSidebar isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
+      {/* Sidebar + Content */}
+      <div className="flex flex-1">
+        <AdminSidebar
+          isMobileOpen={isMobileOpen}
+          setIsMobileOpen={setIsMobileOpen}
+        />
 
-        <main className="flex-1 p-4 overflow-auto">
-          <div className="max-w-7xl mx-auto">{children}</div>
-        </main>
+        {/* Main content area */}
+        <main className="flex-1 p-4 overflow-y-auto md:ml-64">
+  <div className="max-w-7xl mx-auto">{children}</div>
+</main>
+
       </div>
 
-      {/* Footer always at bottom */}
+      {/* Footer spans full width */}
       <Footer />
     </div>
   );

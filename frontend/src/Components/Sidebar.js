@@ -22,17 +22,15 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
 
       {/* Sidebar */}
       <aside
-         className={`bg-white dark:bg-gray-900 shadow-lg
-    w-64 z-50 transition-transform duration-300
-    md:relative md:translate-x-0
-    fixed top-0 left-0 h-full
-    ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
-  `}
+        className={`bg-white dark:bg-gray-900 shadow-lg w-64 transition-transform duration-300
+          md:fixed md:top-16 md:bottom-16 md:left-0
+          fixed top-0 bottom-0 left-0 z-50 md:z-40
+          ${isMobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}`}
       >
         {/* Mobile close button */}
         <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800 md:hidden">
           <span className="text-xl font-bold text-gray-800 dark:text-gray-100">
-            Blog Menu
+            Menu
           </span>
           <button
             className="text-gray-600 dark:text-gray-300"
@@ -43,7 +41,7 @@ const Sidebar = ({ isMobileOpen, setIsMobileOpen }) => {
         </div>
 
         {/* Navigation */}
-        <nav className="mt-4 space-y-2 px-2">
+        <nav className="mt-4 space-y-2 px-2 overflow-y-auto h-full">
           {navItems.map((item, index) => (
             <Link
               key={index}

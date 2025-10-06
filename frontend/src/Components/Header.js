@@ -8,7 +8,6 @@ import { useSelector } from "react-redux";
 const Header = ({ onMenuClick }) => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-
   const user = useSelector((state) => state.user.user);
   const navigate = useNavigate();
 
@@ -21,9 +20,9 @@ const Header = ({ onMenuClick }) => {
 
   return (
     <>
-      <header className="w-full sticky top-0 z-40 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white shadow-md">
-        <div className="max-w-7xl mx-auto flex items-center justify-between p-4">
-          {/* Left: Mobile sidebar toggle + brand */}
+      <header className="h-16 w-full sticky top-0 z-50 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 dark:from-white dark:via-gray-100 dark:to-white shadow-md">
+        <div className="max-w-7xl mx-auto flex items-center justify-between h-full px-4">
+          {/* Left: Mobile menu + brand */}
           <div className="flex items-center gap-4">
             <button
               className="md:hidden text-white dark:text-gray-800"
@@ -42,9 +41,8 @@ const Header = ({ onMenuClick }) => {
             </Link>
           </div>
 
-          {/* Right: Write button + Avatar */}
+          {/* Right Section */}
           <div className="flex items-center gap-6">
-            {/* Write button only on desktop */}
             <Link
               to="/new-blog"
               className="hidden md:flex items-center gap-2 text-white dark:text-gray-800 hover:text-[#4ECCA3] transition"
@@ -53,7 +51,6 @@ const Header = ({ onMenuClick }) => {
               Write
             </Link>
 
-            {/* Avatar Dropdown */}
             <div className="relative">
               <button onClick={() => setDropdownOpen(!dropdownOpen)}>
                 <div className="w-10 h-10 flex items-center justify-center bg-red-100 text-red-500 rounded-full text-2xl font-bold">

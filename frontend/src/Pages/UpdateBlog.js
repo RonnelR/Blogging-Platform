@@ -6,8 +6,10 @@ import { Single_Blog, Update_Blog, All_Categories } from "../Services/Api";
 import { useParams, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import toast from "react-hot-toast";
+import AdminLayout from "../Components/AdminLayout/AdminLayout";
 
 const UpdateBlog = () => {
+   const user = useSelector((state) => state.user.user);
   const token = useSelector((state) => state.user.token);
   const navigate = useNavigate();
 
@@ -113,9 +115,9 @@ const UpdateBlog = () => {
     }
   };
 
-  return (
-    <Layout>
-      <div className="max-w-3xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-2xl shadow-md">
+
+const updateB = (
+    <div className="max-w-3xl mx-auto p-6 bg-white dark:bg-gray-900 rounded-2xl shadow-md">
         <h2 className="text-2xl font-bold mb-6 text-gray-800 dark:text-gray-100">
           Edit Blog
         </h2>
@@ -254,7 +256,17 @@ const UpdateBlog = () => {
           </form>
         )}
       </div>
-    </Layout>
+)
+
+
+  return (
+   <>
+      {user?.role === "admin" ? (
+        <AdminLayout>{updateB}</AdminLayout>
+      ) : (
+        <Layout>{updateB}</Layout>
+      )}
+    </>
   );
 };
 
