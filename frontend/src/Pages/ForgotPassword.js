@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import BrandNname from "../Assects/logo_green.png";
-import { forgotPassword } from "../Services/Api.js"; // 👈 your API service
+import { forgotPassword } from "../Services/Api.js";
 import toast from "react-hot-toast";
 
 const ForgotPassword = () => {

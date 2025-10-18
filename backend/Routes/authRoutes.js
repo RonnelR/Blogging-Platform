@@ -32,9 +32,9 @@ router.patch('/update-role/:userId',isSignInRequired,isAdmin,updateRoleControlle
 
 //save blogs route
 router.patch('/save-blog/:blogId',isSignInRequired,saveBlogController)
-//save blogs route
+//remove blogs route
 router.delete('/save-blog/:blogId',isSignInRequired,unsaveBlogController)
-//save blogs route
+//view saved blogs route
 router.get('/saved-blogs',isSignInRequired,getSavedBlogsController)
 
 

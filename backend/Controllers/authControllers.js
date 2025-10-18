@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs'
 import { userModel } from '../Models/userModel.js';
 import jwt from 'jsonwebtoken';
 import fs from 'fs'
+import nodemailer from "nodemailer";
 
 
 //-------------------register controller---------------------
@@ -143,9 +144,8 @@ res.status(200).json({
 
 //--------------------forgot password-----------------------------------
 
-import nodemailer from "nodemailer";
 
-// 📌 Send Reset Link
+//  Send Reset Link
 export const forgotPasswordController = async (req, res) => {
   try {
     const { email } = req.body;
