@@ -3,7 +3,7 @@ import { allUsersController, deleteUserController, forgotPasswordController, get
 import { isAdmin, isSignInRequired } from "../Middlewares/auth.js";
 import formidable from 'express-formidable'; 
 
-
+//router config
 const router = express.Router()
 
 // login

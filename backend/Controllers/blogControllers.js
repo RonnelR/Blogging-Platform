@@ -3,20 +3,19 @@ import cloudinary from "../Cofig/cloudinary.js"
 import slugify from "slugify";
 import fs from "fs";
 
-
 // -------------------create blog------------------
 
 export const createBlogController = async (req, res) => {
   try {
     const { title, excerpt, content, author, category, tags } = req.body;
-    const file = req.file; // multer gives this
+    const file = req.file; //multerr gives this
 
     // validation
     if (!title) return res.status(400).json({ message: "Title is required!" });
     if (!excerpt) return res.status(400).json({ message: "Excerpt is required!" });
     if (!content) return res.status(400).json({ message: "Content is required!" });
     if (!author) return res.status(400).json({ message: "Author is required!" });
-    // if (!categories) return res.status(400).json({ message: "Categories is required!" });
+    if (!category) return res.status(400).json({ message: "Category is required!" });
     if (!tags) return res.status(400).json({ message: "Tags are required!" });
     if (!file) return res.status(400).json({ message: "Cover image is required!" });
 
@@ -94,6 +93,8 @@ export const editBlogController = async (req, res) => {
     if (!excerpt) return res.status(400).json({ message: "Excerpt is required!" });
     if (!content) return res.status(400).json({ message: "Content is required!" });
     if (!author) return res.status(400).json({ message: "Author is required!" });
+    if (!tags) return res.status(400).json({ message: "tags is required!" });
+    if (!category) return res.status(400).json({ message: "category is required!" });
 
     // parse tags & categories if JSON string
     if (typeof tags === 'string') {
@@ -115,7 +116,7 @@ export const editBlogController = async (req, res) => {
     }
 
     const blog = await blogModel.findById(blogId);
-    if (!blog) return res.status(404).json({ success: false, message: "Blog not found" });
+    if (!blog) return res.status(401).json({ success: false, message: "Blog not found" });
 
     let slug = slugify(title, { lower: true, strict: true });
     const existingBlog = await blogModel.findOne({ slug, _id: { $ne: blogId } });
@@ -237,7 +238,7 @@ export const allBlogsController = async (req,res)=>{
 export const singleBlogController = async (req,res)=>{
   try {
    
-    const singleBlog = await blogModel.findById(req.params.id).populate("author","name _id")
+    const singleBlog = await blogModel.findById(req.params.id).populate("author","name _id") 
     if(singleBlog){
       res.status(200).json({
         success:true,
@@ -278,7 +279,6 @@ export const likeBlogController = async (req, res) => {
   }
 };
 
-
 // Unlike Blog
 export const unlikeBlogController = async (req, res) => {
   try {
@@ -311,7 +311,7 @@ export const addCommentController = async (req, res) => {
 
     const comment = { user: userId, text };
     blog.comments.push(comment);
-    await blog.save();
+    await blog.save(); 
 
     // return populated comments for frontend
     await blog.populate("comments.user", "name photo");
@@ -349,7 +349,7 @@ export const deleteCommentController = async (req, res) => {
       return res.status(403).json({ success: false, message: "Not authorized to delete this comment" });
     }
 
-    // ✅ Use pull instead of comment.remove()
+    // comment remove
     blog.comments.pull(commentId);
     await blog.save();
 

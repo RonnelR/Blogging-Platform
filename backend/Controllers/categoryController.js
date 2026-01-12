@@ -31,7 +31,7 @@ export const createCategoryController = async (req, res) => {
         message: "Category name is required",
       });
     }
-
+ 
     // Check if category already exists
     const existingCategory = await categoryModel.findOne({ name });
     if (existingCategory) {
@@ -68,7 +68,7 @@ export const createCategoryController = async (req, res) => {
   export const deleteCategoryController = async (req, res) => {
   try {
 
-    const deletedCategory = await categoryModel.findByIdAndDelete(req.params.cId);
+  const deletedCategory = await categoryModel.findByIdAndDelete(req.params.cId);
 
     if (!deletedCategory) {
       return res.status(404).json({

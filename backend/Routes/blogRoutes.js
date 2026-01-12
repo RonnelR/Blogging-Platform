@@ -1,12 +1,9 @@
 import express from 'express';
 import { isSignInRequired } from '../Middlewares/auth.js';
 import { addCommentController, allBlogsController, createBlogController, deleteBlogController, deleteCommentController, editBlogController, editCommentController, likeBlogController, singleBlogController, unlikeBlogController, userBlogsController } from '../Controllers/blogControllers.js';
-import upload from '../Middlewares/multer.js';
-import { isDataView } from 'util/types';
-
+import upload from '../Middlewares/multer.js'; 
 
 const router = express.Router();
-
 
 //post route for creating blogs
 router.post('/create-blog',isSignInRequired,upload.single("coverImage") ,createBlogController);

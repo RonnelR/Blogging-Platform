@@ -17,7 +17,6 @@ export const registerController = async (req,res)=>{
             success:false,
             message:"name is required!"
         })
-        
     }
 
     if(!email){
@@ -25,15 +24,13 @@ export const registerController = async (req,res)=>{
             success:false,
             message:"email is required!"
         })
-        
     }
 
     if(!password){
         return res.status(401).json({
-            success:false,
+            success:false, 
             message:"password is required!"
-        })
-        
+        }) 
     }
 
     try {
@@ -111,7 +108,6 @@ if(!comparePassword){
         }) 
 }
 
-
 //token creation
 const token = jwt.sign({id:registeredUser._id,role:registeredUser.role},process.env.JWT_SECRET,{expiresIn:'7d'})
 
@@ -149,10 +145,13 @@ res.status(200).json({
 export const forgotPasswordController = async (req, res) => {
   try {
     const { email } = req.body;
+
+    //validation
     if (!email) return res.status(400).json({ success: false, message: "Email is required" });
 
     const user = await userModel.findOne({ email });
-    if (!user) return res.status(404).json({ success: false, message: "User not found" });
+    //check email is registered
+    if (!user) return res.status(404).json({ success: false, message: "User not found,Please register" });
 
     // Create reset token (expires in 15m)
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "15m" });
@@ -169,9 +168,9 @@ export const forgotPasswordController = async (req, res) => {
     });
 
     await transporter.sendMail({
-      from: `"Blog App" <${process.env.EMAIL_USER}>`,
+      from: `"Italics Blogging Platform" <${process.env.EMAIL_USER}>`,
       to: email,
-      subject: "Password Reset Request",
+      subject: "Password Reset Request - Italics.",
       html: `<p>You requested a password reset</p>
              <p>Click here to reset: <a href="${resetLink}">${resetLink}</a></p>
              <p>This link is valid for 15 minutes.</p>`,
@@ -191,6 +190,7 @@ export const resetPasswordController = async (req, res) => {
     const { token } = req.params;
     const { password } = req.body;
 
+    //validation
     if (!password) return res.status(400).json({ success: false, message: "Password is required" });
 
     // Verify token
@@ -199,6 +199,7 @@ export const resetPasswordController = async (req, res) => {
     // Hash new password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    //update usermodel with new password
     await userModel.findByIdAndUpdate(decoded.id, { password: hashedPassword });
 
     res.json({ success: true, message: "Password has been reset successfully!" });
