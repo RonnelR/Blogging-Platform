@@ -20,7 +20,7 @@ const app = express();
 
 const allowedOrigins = [
   "http://localhost:3000",         // local dev
-  "https://https://italics-app.netlify.app"  // deployed frontend
+  "https://italics-app.netlify.app"  // deployed frontend
 ];
 
 //middleware
