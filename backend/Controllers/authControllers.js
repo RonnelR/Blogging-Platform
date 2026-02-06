@@ -38,7 +38,7 @@ export const registerController = async (req,res)=>{
     //checking if already registered
     const alreadyUser = await userModel.findOne({email})
     if (alreadyUser) {
-        return  res.status(201).json({
+        return  res.status(200).json({
             success:true,
             message:"Already a user, please login!"
         })
@@ -80,7 +80,7 @@ export const loginController = async (req,res)=>{
             message:"email is required!"
         })
     }
-
+ 
     if(!password){
         return res.status(401).json({
             success:false,
@@ -107,7 +107,7 @@ if(!comparePassword){
             message:"password not matching!"
         }) 
 }
-
+ 
 //token creation
 const token = jwt.sign({id:registeredUser._id,role:registeredUser.role},process.env.JWT_SECRET,{expiresIn:'7d'})
 
@@ -141,7 +141,7 @@ res.status(200).json({
 //--------------------forgot password-----------------------------------
 
 
-//  Send Reset Link
+// --------------------- Send Reset Link-------------------------
 export const forgotPasswordController = async (req, res) => {
   try {
     const { email } = req.body;
@@ -398,7 +398,6 @@ export const updateRoleController = async (req, res) => {
     });
   }
 };
-
 
 //--------------------------------save blog---------------------------------------
 export const saveBlogController = async (req, res) => {

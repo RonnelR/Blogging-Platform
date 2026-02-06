@@ -29,7 +29,7 @@ const blogSchema = new mongoose.Schema(
               },
          public_id: {
                       type: String, // Cloudinary public_id
-                      required: true,
+                      required: true, 
                     },
      
     },

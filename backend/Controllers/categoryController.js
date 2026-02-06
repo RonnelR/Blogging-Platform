@@ -1,15 +1,15 @@
 import categoryModel from "../Models/categoryModel.js";
 import slugify from 'slugify';
-import mongoose from "mongoose";
 
-// ✅ Get all categories
+
+//--------------------------- Get all categories---------------------------
 export const getCategoryController = async (req, res) => {
   try {
     const allCategories = await categoryModel.find({});
     res.status(200).json({
       success: true,
       message: "Category list fetched successfully",
-      categories: allCategories, // 👈 return as `categories` for frontend
+      categories: allCategories, //  return as `categories` for frontend
     });
   } catch (error) {
     res.status(500).json({
@@ -20,7 +20,7 @@ export const getCategoryController = async (req, res) => {
   }
 };
 
-// ✅ Create category
+// --------------------------Create category---------------------------------
 export const createCategoryController = async (req, res) => {
   try {
     const { name } = req.body;
@@ -64,7 +64,7 @@ export const createCategoryController = async (req, res) => {
 };
 
 
-  // ✅ Delete category
+  //-------------------------- Delete category--------------------------
   export const deleteCategoryController = async (req, res) => {
   try {
 
@@ -82,6 +82,7 @@ export const createCategoryController = async (req, res) => {
       message: "Category deleted successfully",
       deletedCategory,
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -89,4 +90,5 @@ export const createCategoryController = async (req, res) => {
       error: error.message,
     });
   }
+  
 };

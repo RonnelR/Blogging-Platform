@@ -107,13 +107,14 @@ export const editBlogController = async (req, res) => {
     if(!Array.isArray(tags)){
       tags= [tags]
     }
-    if (category) {
-      try {
-        category = JSON.parse(category);
-      } catch {
-        category = [category];
-      }
-    }
+
+    // if (category) {
+    //   try {
+    //     category = JSON.parse(category);
+    //   } catch {
+    //     category = [category];
+    //   }
+    // }
 
     const blog = await blogModel.findById(blogId);
     if (!blog) return res.status(401).json({ success: false, message: "Blog not found" });
@@ -123,6 +124,7 @@ export const editBlogController = async (req, res) => {
     if (existingBlog) slug = `${slug}-${Date.now()}`;
 
     let coverImage = blog.coverImage;
+
     if (file) {
       if (coverImage?.public_id) {
         await cloudinary.uploader.destroy(coverImage.public_id);
@@ -234,6 +236,37 @@ export const allBlogsController = async (req,res)=>{
 }
 
 
+//----------------------------- get userBlogs controller--------------------------
+export const userBlogsController = async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    // find all blogs where author matches userId
+    const userBlogs = await blogModel.find({ author: userId });
+
+    if (userBlogs && userBlogs.length > 0) {
+      return res.status(200).json({
+        success: true,
+        message: "User Blogs fetched successfully",
+        userBlogs,
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: "No blogs found for this user",
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Server Error while getting blogs",
+      error: error.message,
+    });
+  }
+};
+
+
+
 //-------------------------get sigle blog details-----------------
 export const singleBlogController = async (req,res)=>{
   try {
@@ -261,7 +294,7 @@ export const singleBlogController = async (req,res)=>{
 }
 
 
-// Like Blog
+//--------------------------- Like Blog ------------------------
 export const likeBlogController = async (req, res) => {
   try {
     const blog = await blogModel.findById(req.params.blogId);
@@ -279,7 +312,7 @@ export const likeBlogController = async (req, res) => {
   }
 };
 
-// Unlike Blog
+//---------------------------- Unlike Blog -----------------------------
 export const unlikeBlogController = async (req, res) => {
   try {
     const blog = await blogModel.findById(req.params.blogId);
@@ -290,7 +323,7 @@ export const unlikeBlogController = async (req, res) => {
     blog.likes = blog.likes.filter((id) => id.toString() !== userId);
 
     await blog.save();
-    res.json({ success: true, likes: blog.likes });
+    res.status(200).json({ success: true, likes: blog.likes });
   } catch (err) {
     console.error(err);
     res.status(500).json({ success: false, message: "Server Error" });
@@ -316,7 +349,7 @@ export const addCommentController = async (req, res) => {
     // return populated comments for frontend
     await blog.populate("comments.user", "name photo");
 
-    res.json({
+    res.status(200).json({
       success: true,
       message: "Comment added",
       comments: blog.comments,
@@ -409,31 +442,3 @@ export const editCommentController = async (req, res) => {
 };
 
 
-// get userBlogs controller
-export const userBlogsController = async (req, res) => {
-  try {
-    const { userId } = req.params;
-
-    // find all blogs where author matches userId
-    const userBlogs = await blogModel.find({ author: userId });
-
-    if (userBlogs && userBlogs.length > 0) {
-      return res.status(200).json({
-        success: true,
-        message: "User Blogs fetched successfully",
-        userBlogs,
-      });
-    } else {
-      return res.status(404).json({
-        success: false,
-        message: "No blogs found for this user",
-      });
-    }
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Server Error while getting blogs",
-      error: error.message,
-    });
-  }
-};
